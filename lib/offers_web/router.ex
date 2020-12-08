@@ -21,6 +21,7 @@ defmodule OffersWeb.Router do
     resources "/universities", UniversityController, except: [:new, :edit]
     resources "/campus", CampusController, except: [:new, :edit]
     resources "/courses", CourseController, except: [:new, :edit]
+    resources "/bids", BidController, except: [:new, :edit]
   end
 
   # Enables LiveDashboard only for development

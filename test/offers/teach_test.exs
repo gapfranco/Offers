@@ -191,4 +191,73 @@ defmodule Offers.TeachTest do
       assert %Ecto.Changeset{} = Teach.change_course(course)
     end
   end
+
+  describe "bids" do
+    alias Offers.Teach.Bid
+
+    @valid_attrs %{discount_percentage: 120.5, enabled: true, enrollment_semester: "some enrollment_semester", full_price: 120.5, price_with_discount: 120.5, start_date: "some start_date"}
+    @update_attrs %{discount_percentage: 456.7, enabled: false, enrollment_semester: "some updated enrollment_semester", full_price: 456.7, price_with_discount: 456.7, start_date: "some updated start_date"}
+    @invalid_attrs %{discount_percentage: nil, enabled: nil, enrollment_semester: nil, full_price: nil, price_with_discount: nil, start_date: nil}
+
+    def bid_fixture(attrs \\ %{}) do
+      {:ok, bid} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Teach.create_bid()
+
+      bid
+    end
+
+    test "list_bids/0 returns all bids" do
+      bid = bid_fixture()
+      assert Teach.list_bids() == [bid]
+    end
+
+    test "get_bid!/1 returns the bid with given id" do
+      bid = bid_fixture()
+      assert Teach.get_bid!(bid.id) == bid
+    end
+
+    test "create_bid/1 with valid data creates a bid" do
+      assert {:ok, %Bid{} = bid} = Teach.create_bid(@valid_attrs)
+      assert bid.discount_percentage == 120.5
+      assert bid.enabled == true
+      assert bid.enrollment_semester == "some enrollment_semester"
+      assert bid.full_price == 120.5
+      assert bid.price_with_discount == 120.5
+      assert bid.start_date == "some start_date"
+    end
+
+    test "create_bid/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Teach.create_bid(@invalid_attrs)
+    end
+
+    test "update_bid/2 with valid data updates the bid" do
+      bid = bid_fixture()
+      assert {:ok, %Bid{} = bid} = Teach.update_bid(bid, @update_attrs)
+      assert bid.discount_percentage == 456.7
+      assert bid.enabled == false
+      assert bid.enrollment_semester == "some updated enrollment_semester"
+      assert bid.full_price == 456.7
+      assert bid.price_with_discount == 456.7
+      assert bid.start_date == "some updated start_date"
+    end
+
+    test "update_bid/2 with invalid data returns error changeset" do
+      bid = bid_fixture()
+      assert {:error, %Ecto.Changeset{}} = Teach.update_bid(bid, @invalid_attrs)
+      assert bid == Teach.get_bid!(bid.id)
+    end
+
+    test "delete_bid/1 deletes the bid" do
+      bid = bid_fixture()
+      assert {:ok, %Bid{}} = Teach.delete_bid(bid)
+      assert_raise Ecto.NoResultsError, fn -> Teach.get_bid!(bid.id) end
+    end
+
+    test "change_bid/1 returns a bid changeset" do
+      bid = bid_fixture()
+      assert %Ecto.Changeset{} = Teach.change_bid(bid)
+    end
+  end
 end
