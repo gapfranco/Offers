@@ -7,6 +7,8 @@ defmodule OffersWeb.Router do
 
   scope "/api", OffersWeb do
     pipe_through :api
+    resources "/universities", UniversityController, except: [:new, :edit]
+    resources "/campus", CampusController, except: [:new, :edit]
     post "/users/sign_in", UserController, :sign_in
     post "/users/sign_on", UserController, :sign_on
   end
