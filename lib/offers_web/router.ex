@@ -1,16 +1,26 @@
 defmodule OffersWeb.Router do
   use OffersWeb, :router
+  alias Offers.Guardian
 
   pipeline :api do
     plug :accepts, ["json"]
   end
 
+  pipeline :jwt_authenticated do
+    plug Guardian.AuthPipeline
+  end
+
   scope "/api", OffersWeb do
     pipe_through :api
-    resources "/universities", UniversityController, except: [:new, :edit]
-    resources "/campus", CampusController, except: [:new, :edit]
     post "/users/sign_in", UserController, :sign_in
     post "/users/sign_on", UserController, :sign_on
+  end
+
+  scope "/api", OffersWeb do
+    pipe_through [:api, :jwt_authenticated]
+    resources "/universities", UniversityController, except: [:new, :edit]
+    resources "/campus", CampusController, except: [:new, :edit]
+    resources "/courses", CourseController, except: [:new, :edit]
   end
 
   # Enables LiveDashboard only for development
