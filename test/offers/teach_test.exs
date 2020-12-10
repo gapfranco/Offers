@@ -42,7 +42,10 @@ defmodule Offers.TeachTest do
 
     test "update_university/2 with valid data updates the university" do
       university = university_fixture()
-      assert {:ok, %University{} = university} = Teach.update_university(university, @update_attrs)
+
+      assert {:ok, %University{} = university} =
+               Teach.update_university(university, @update_attrs)
+
       assert university.logo_url == "some updated logo_url"
       assert university.name == "some updated name"
       assert university.score == 456.7
@@ -74,8 +77,11 @@ defmodule Offers.TeachTest do
     @invalid_attrs %{city: nil, name: nil}
 
     def campus_fixture(attrs \\ %{}) do
+      university = university_fixture()
+
       {:ok, campus} =
-        attrs
+        %{university_id: university.id}
+        |> Enum.into(attrs)
         |> Enum.into(@valid_attrs)
         |> Teach.create_campus()
 
@@ -93,7 +99,7 @@ defmodule Offers.TeachTest do
     end
 
     test "create_campus/1 with valid data creates a campus" do
-      assert {:ok, %Campus{} = campus} = Teach.create_campus(@valid_attrs)
+      campus = campus_fixture()
       assert campus.city == "some city"
       assert campus.name == "some name"
     end
@@ -120,23 +126,26 @@ defmodule Offers.TeachTest do
       assert {:ok, %Campus{}} = Teach.delete_campus(campus)
       assert_raise Ecto.NoResultsError, fn -> Teach.get_campus!(campus.id) end
     end
-
-    test "change_campus/1 returns a campus changeset" do
-      campus = campus_fixture()
-      assert %Ecto.Changeset{} = Teach.change_campus(campus)
-    end
   end
 
   describe "courses" do
     alias Offers.Teach.Course
 
-    @valid_attrs %{kind: "some kind", level: "some level", name: "some name", shift: "some shift"}
-    @update_attrs %{kind: "some updated kind", level: "some updated level", name: "some updated name", shift: "some updated shift"}
+    @valid_attrs %{kind: "Presencial", level: "Bacharelado", name: "some name", shift: "Noite"}
+    @update_attrs %{
+      kind: "EaD",
+      level: "Tecnólogo",
+      name: "some updated name",
+      shift: "Manhã"
+    }
     @invalid_attrs %{kind: nil, level: nil, name: nil, shift: nil}
 
     def course_fixture(attrs \\ %{}) do
+      campus = campus_fixture()
+
       {:ok, course} =
-        attrs
+        %{campus_id: campus.id}
+        |> Enum.into(attrs)
         |> Enum.into(@valid_attrs)
         |> Teach.create_course()
 
@@ -145,7 +154,10 @@ defmodule Offers.TeachTest do
 
     test "list_courses/0 returns all courses" do
       course = course_fixture()
-      assert Teach.list_courses() == [course]
+      [curso1] = Teach.list_courses()
+      assert curso1.id == course.id
+      assert curso1.university_id == course.university_id
+      assert curso1.campus_id == course.campus_id
     end
 
     test "get_course!/1 returns the course with given id" do
@@ -154,11 +166,11 @@ defmodule Offers.TeachTest do
     end
 
     test "create_course/1 with valid data creates a course" do
-      assert {:ok, %Course{} = course} = Teach.create_course(@valid_attrs)
-      assert course.kind == "some kind"
-      assert course.level == "some level"
+      course = course_fixture()
+      assert course.kind == "Presencial"
+      assert course.level == "Bacharelado"
       assert course.name == "some name"
-      assert course.shift == "some shift"
+      assert course.shift == "Noite"
     end
 
     test "create_course/1 with invalid data returns error changeset" do
@@ -168,10 +180,10 @@ defmodule Offers.TeachTest do
     test "update_course/2 with valid data updates the course" do
       course = course_fixture()
       assert {:ok, %Course{} = course} = Teach.update_course(course, @update_attrs)
-      assert course.kind == "some updated kind"
-      assert course.level == "some updated level"
+      assert course.kind == "EaD"
+      assert course.level == "Tecnólogo"
       assert course.name == "some updated name"
-      assert course.shift == "some updated shift"
+      assert course.shift == "Manhã"
     end
 
     test "update_course/2 with invalid data returns error changeset" do
@@ -185,23 +197,42 @@ defmodule Offers.TeachTest do
       assert {:ok, %Course{}} = Teach.delete_course(course)
       assert_raise Ecto.NoResultsError, fn -> Teach.get_course!(course.id) end
     end
-
-    test "change_course/1 returns a course changeset" do
-      course = course_fixture()
-      assert %Ecto.Changeset{} = Teach.change_course(course)
-    end
   end
 
   describe "bids" do
     alias Offers.Teach.Bid
 
-    @valid_attrs %{discount_percentage: 120.5, enabled: true, enrollment_semester: "some enrollment_semester", full_price: 120.5, price_with_discount: 120.5, start_date: "some start_date"}
-    @update_attrs %{discount_percentage: 456.7, enabled: false, enrollment_semester: "some updated enrollment_semester", full_price: 456.7, price_with_discount: 456.7, start_date: "some updated start_date"}
-    @invalid_attrs %{discount_percentage: nil, enabled: nil, enrollment_semester: nil, full_price: nil, price_with_discount: nil, start_date: nil}
+    @valid_attrs %{
+      discount_percentage: 120.5,
+      enabled: true,
+      enrollment_semester: "some enrollment_semester",
+      full_price: 120.5,
+      price_with_discount: 120.5,
+      start_date: "some start_date"
+    }
+    @update_attrs %{
+      discount_percentage: 456.7,
+      enabled: false,
+      enrollment_semester: "some updated enrollment_semester",
+      full_price: 456.7,
+      price_with_discount: 456.7,
+      start_date: "some updated start_date"
+    }
+    @invalid_attrs %{
+      discount_percentage: nil,
+      enabled: nil,
+      enrollment_semester: nil,
+      full_price: nil,
+      price_with_discount: nil,
+      start_date: nil
+    }
 
     def bid_fixture(attrs \\ %{}) do
+      course = course_fixture()
+
       {:ok, bid} =
-        attrs
+        %{course_id: course.id}
+        |> Enum.into(attrs)
         |> Enum.into(@valid_attrs)
         |> Teach.create_bid()
 
@@ -210,7 +241,11 @@ defmodule Offers.TeachTest do
 
     test "list_bids/0 returns all bids" do
       bid = bid_fixture()
-      assert Teach.list_bids() == [bid]
+      [bid1] = Teach.list_bids()
+      assert bid1.id == bid.id
+      assert bid1.course_id == bid.course_id
+      assert bid1.university_id == bid.university_id
+      assert bid1.campus_id == bid.campus_id
     end
 
     test "get_bid!/1 returns the bid with given id" do
@@ -219,7 +254,8 @@ defmodule Offers.TeachTest do
     end
 
     test "create_bid/1 with valid data creates a bid" do
-      assert {:ok, %Bid{} = bid} = Teach.create_bid(@valid_attrs)
+      # assert {:ok, %Bid{} = bid} = Teach.create_bid(@valid_attrs)
+      bid = bid_fixture()
       assert bid.discount_percentage == 120.5
       assert bid.enabled == true
       assert bid.enrollment_semester == "some enrollment_semester"

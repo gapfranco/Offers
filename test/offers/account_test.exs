@@ -6,7 +6,11 @@ defmodule Offers.AccountTest do
   describe "users" do
     alias Offers.Account.User
 
-    @valid_attrs %{email: "some email", password_hash: "some password_hash"}
+    @valid_attrs %{
+      email: "some email",
+      password: "some password",
+      password_hash: "some password_hash"
+    }
     @update_attrs %{email: "some updated email", password_hash: "some updated password_hash"}
     @invalid_attrs %{email: nil, password_hash: nil}
 
@@ -16,7 +20,7 @@ defmodule Offers.AccountTest do
         |> Enum.into(@valid_attrs)
         |> Account.create_user()
 
-      user
+      user |> Map.put(:password, nil)
     end
 
     test "list_users/0 returns all users" do

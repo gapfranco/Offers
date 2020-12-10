@@ -7,9 +7,10 @@ use Mix.Config
 # Run `mix help test` for more information.
 config :offers, Offers.Repo,
   username: "postgres",
-  password: "postgres",
+  password: "docker",
   database: "offers_test#{System.get_env("MIX_TEST_PARTITION")}",
   hostname: "localhost",
+  port: 5433,
   pool: Ecto.Adapters.SQL.Sandbox
 
 # We don't run a server during test. If one is required,

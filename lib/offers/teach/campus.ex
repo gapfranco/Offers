@@ -21,7 +21,7 @@ defmodule Offers.Teach.Campus do
   @doc false
   def update_changeset(campus, attrs) do
     campus
-    |> cast(attrs, [:name])
-    |> validate_required([:name])
+    |> cast(attrs, [:name, :city])
+    |> validate_required([:name, :city])
   end
 end

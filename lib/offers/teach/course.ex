@@ -37,11 +37,21 @@ defmodule Offers.Teach.Course do
   end
 
   defp get_university(%Ecto.Changeset{changes: %{campus_id: id}} = changeset) do
-    reg = Teach.get_campus!(id)
-    reg.university_id
+    reg = Teach.get_campus(id)
+
+    uni_id =
+      if reg do
+        reg.university_id
+      else
+        nil
+      end
 
     changeset
-    |> put_change(:university_id, reg.university_id)
+    |> put_change(:university_id, uni_id)
+  end
+
+  defp get_university(_ = changeset) do
+    changeset
   end
 
   defp validate_level_option(changeset, field) do

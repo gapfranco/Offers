@@ -136,6 +136,7 @@ defmodule Offers.Teach do
 
   """
   def get_campus!(id), do: Repo.get!(Campus, id)
+  def get_campus(id), do: Repo.get(Campus, id)
 
   def get_campus_by_name(name) when is_binary(name) do
     Repo.get_by(Campus, name: name)
@@ -217,7 +218,7 @@ defmodule Offers.Teach do
       [%Course{}, ...]
 
   """
-  def list_courses(params) do
+  def list_courses(params \\ %{}) do
     Course
     |> join(:inner, [p], assoc(p, :university), as: :university)
     |> join(:inner, [p], assoc(p, :campus), as: :campus)
@@ -351,7 +352,7 @@ defmodule Offers.Teach do
       [%Bid{}, ...]
 
   """
-  def list_bids(params) do
+  def list_bids(params \\ %{}) do
     Bid
     |> join(:inner, [p], assoc(p, :university), as: :university)
     |> join(:inner, [p], assoc(p, :course), as: :course)

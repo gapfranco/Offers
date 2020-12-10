@@ -69,4 +69,8 @@ defmodule Offers.Teach.Bid do
     |> put_change(:university_id, reg.university_id)
     |> put_change(:campus_id, reg.campus_id)
   end
+
+  defp get_university(_ = changeset) do
+    changeset
+  end
 end
