@@ -2,17 +2,11 @@ defmodule OffersWeb.UserControllerTest do
   use OffersWeb.ConnCase
 
   alias Offers.Account
-  alias Offers.Account.User
 
   @create_attrs %{
-    email: "some email",
+    email: "some@email.com",
     password: "some password"
   }
-  @update_attrs %{
-    email: "some updated email",
-    password: "some updated password"
-  }
-  @invalid_attrs %{email: nil, password: nil}
 
   def fixture(:user) do
     {:ok, user} = Account.create_user(@create_attrs)
@@ -23,65 +17,25 @@ defmodule OffersWeb.UserControllerTest do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
   end
 
-  describe "index" do
-    test "lists all users", %{conn: conn} do
-      conn = get(conn, Routes.user_path(conn, :index))
-      assert json_response(conn, 200)["data"] == []
-    end
-  end
-
-  describe "create user" do
-    test "renders user when data is valid", %{conn: conn} do
-      conn = post(conn, Routes.user_path(conn, :create), user: @create_attrs)
-      assert %{"id" => id} = json_response(conn, 201)["data"]
-
-      conn = get(conn, Routes.user_path(conn, :show, id))
-
-      assert %{
-               "id" => id,
-               "email" => "some email",
-               "password" => "some password"
-             } = json_response(conn, 200)["data"]
-    end
-
-    test "renders errors when data is invalid", %{conn: conn} do
-      conn = post(conn, Routes.user_path(conn, :create), user: @invalid_attrs)
-      assert json_response(conn, 422)["errors"] != %{}
-    end
-  end
-
-  describe "update user" do
+  describe "sign_in" do
     setup [:create_user]
 
-    test "renders user when data is valid", %{conn: conn, user: %User{id: id} = user} do
-      conn = put(conn, Routes.user_path(conn, :update, user), user: @update_attrs)
-      assert %{"id" => ^id} = json_response(conn, 200)["data"]
-
-      conn = get(conn, Routes.user_path(conn, :show, id))
+    test "user can sign in", %{conn: conn} do
+      conn = post(conn, Routes.user_path(conn, :sign_in), @create_attrs)
 
       assert %{
-               "id" => id,
-               "email" => "some updated email",
-               "password" => "some updated password"
-             } = json_response(conn, 200)["data"]
-    end
-
-    test "renders errors when data is invalid", %{conn: conn, user: user} do
-      conn = put(conn, Routes.user_path(conn, :update, user), user: @invalid_attrs)
-      assert json_response(conn, 422)["errors"] != %{}
+               "token" => _token
+             } = json_response(conn, 200)
     end
   end
 
-  describe "delete user" do
-    setup [:create_user]
+  describe "sign_on" do
+    test "user can sign on", %{conn: conn} do
+      conn = post(conn, Routes.user_path(conn, :sign_on), @create_attrs)
 
-    test "deletes chosen user", %{conn: conn, user: user} do
-      conn = delete(conn, Routes.user_path(conn, :delete, user))
-      assert response(conn, 204)
-
-      assert_error_sent 404, fn ->
-        get(conn, Routes.user_path(conn, :show, user))
-      end
+      assert %{
+               "email" => "some@email.com"
+             } = json_response(conn, 200)["user"]
     end
   end
 

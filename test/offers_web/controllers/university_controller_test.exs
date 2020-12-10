@@ -3,6 +3,7 @@ defmodule OffersWeb.UniversityControllerTest do
 
   alias Offers.Teach
   alias Offers.Teach.University
+  alias Offers.Guardian
 
   @create_attrs %{
     logo_url: "some logo_url",
@@ -16,13 +17,25 @@ defmodule OffersWeb.UniversityControllerTest do
   }
   @invalid_attrs %{logo_url: nil, name: nil, score: nil}
 
+  @user %{id: 1, email: "usr@cl1.com"}
+
   def fixture(:university) do
     {:ok, university} = Teach.create_university(@create_attrs)
     university
   end
 
   setup %{conn: conn} do
-    {:ok, conn: put_req_header(conn, "accept", "application/json")}
+    conn =
+      conn
+      |> put_req_header("accept", "application/json")
+      |> conn_token()
+
+    {:ok, conn: conn}
+  end
+
+  def conn_token(conn) do
+    {:ok, token, _} = Guardian.encode_and_sign(@user)
+    conn |> put_req_header("authorization", "Bearer #{token}")
   end
 
   describe "index" do
@@ -40,7 +53,7 @@ defmodule OffersWeb.UniversityControllerTest do
       conn = get(conn, Routes.university_path(conn, :show, id))
 
       assert %{
-               "id" => id,
+               "id" => _id,
                "logo_url" => "some logo_url",
                "name" => "some name",
                "score" => 120.5
@@ -56,14 +69,19 @@ defmodule OffersWeb.UniversityControllerTest do
   describe "update university" do
     setup [:create_university]
 
-    test "renders university when data is valid", %{conn: conn, university: %University{id: id} = university} do
-      conn = put(conn, Routes.university_path(conn, :update, university), university: @update_attrs)
+    test "renders university when data is valid", %{
+      conn: conn,
+      university: %University{id: id} = university
+    } do
+      conn =
+        put(conn, Routes.university_path(conn, :update, university), university: @update_attrs)
+
       assert %{"id" => ^id} = json_response(conn, 200)["data"]
 
       conn = get(conn, Routes.university_path(conn, :show, id))
 
       assert %{
-               "id" => id,
+               "id" => _id,
                "logo_url" => "some updated logo_url",
                "name" => "some updated name",
                "score" => 456.7
@@ -71,7 +89,9 @@ defmodule OffersWeb.UniversityControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn, university: university} do
-      conn = put(conn, Routes.university_path(conn, :update, university), university: @invalid_attrs)
+      conn =
+        put(conn, Routes.university_path(conn, :update, university), university: @invalid_attrs)
+
       assert json_response(conn, 422)["errors"] != %{}
     end
   end

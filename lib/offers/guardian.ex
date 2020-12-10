@@ -16,7 +16,7 @@ defmodule Offers.Guardian do
     # found in the `"sub"` key. In `above subject_for_token/2` we returned
     # the resource id so here we'll rely on that to look it up.
     id = claims["sub"]
-    resource = Offers.Account.get_user!(id)
+    resource = Offers.Account.get_user(id)
     {:ok, resource}
   end
 end
