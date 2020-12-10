@@ -37,6 +37,10 @@ defmodule Offers.Teach do
   """
   def get_university!(id), do: Repo.get!(University, id)
 
+  def get_university_by_name(name) when is_binary(name) do
+    Repo.get_by(University, name: name)
+  end
+
   @doc """
   Creates a university.
 
@@ -133,6 +137,10 @@ defmodule Offers.Teach do
   """
   def get_campus!(id), do: Repo.get!(Campus, id)
 
+  def get_campus_by_name(name) when is_binary(name) do
+    Repo.get_by(Campus, name: name)
+  end
+
   @doc """
   Creates a campus.
 
@@ -209,8 +217,42 @@ defmodule Offers.Teach do
       [%Course{}, ...]
 
   """
-  def list_courses do
-    Repo.all(Course)
+  def list_courses(params) do
+    Course
+    |> join(:inner, [p], assoc(p, :university), as: :university)
+    |> join(:inner, [p], assoc(p, :campus), as: :campus)
+    |> where(^courses_where(params))
+    |> Repo.all()
+    |> Repo.preload([:university, :campus])
+  end
+
+  def courses_where(params) do
+    Enum.reduce(params, dynamic(true), fn
+      {"university", value}, dynamic ->
+        dynamic([university: u], ^dynamic and u.name == ^value)
+
+      {"course", value}, dynamic ->
+        dynamic([p], ^dynamic and p.name == ^value)
+
+      {"kind", value}, dynamic ->
+        dynamic([p], ^dynamic and p.kind == ^value)
+
+      {"level", value}, dynamic ->
+        dynamic([p], ^dynamic and p.level == ^value)
+
+      {"shift", value}, dynamic ->
+        dynamic([p], ^dynamic and p.level == ^value)
+
+      {"campus", value}, dynamic ->
+        dynamic([campus: a], ^dynamic and a.name == ^value)
+
+      {"city", value}, dynamic ->
+        dynamic([campus: a], ^dynamic and a.city == ^value)
+
+      {_, _}, dynamic ->
+        # Not a where parameter
+        dynamic
+    end)
   end
 
   @doc """
@@ -228,6 +270,10 @@ defmodule Offers.Teach do
 
   """
   def get_course!(id), do: Repo.get!(Course, id)
+
+  def get_course_by_name(name) when is_binary(name) do
+    Repo.get_by(Course, name: name)
+  end
 
   @doc """
   Creates a course.
@@ -305,8 +351,48 @@ defmodule Offers.Teach do
       [%Bid{}, ...]
 
   """
-  def list_bids do
-    Repo.all(Bid)
+  def list_bids(params) do
+    Bid
+    |> join(:inner, [p], assoc(p, :university), as: :university)
+    |> join(:inner, [p], assoc(p, :course), as: :course)
+    |> join(:inner, [p], assoc(p, :campus), as: :campus)
+    |> order_by(^bids_order_by(params["order_by"]))
+    |> where(^bids_where(params))
+    |> Repo.all()
+    |> Repo.preload([:university, :campus, :course])
+  end
+
+  def bids_order_by("asc_price"), do: [asc: dynamic([p], p.price_with_discount)]
+  def bids_order_by("desc_price"), do: [desc: dynamic([p], p.price_with_discount)]
+  def bids_order_by(_), do: []
+
+  def bids_where(params) do
+    Enum.reduce(params, dynamic(true), fn
+      {"university", value}, dynamic ->
+        dynamic([university: u], ^dynamic and u.name == ^value)
+
+      {"course", value}, dynamic ->
+        dynamic([course: c], ^dynamic and c.name == ^value)
+
+      {"kind", value}, dynamic ->
+        dynamic([course: c], ^dynamic and c.kind == ^value)
+
+      {"level", value}, dynamic ->
+        dynamic([course: c], ^dynamic and c.level == ^value)
+
+      {"shift", value}, dynamic ->
+        dynamic([course: c], ^dynamic and c.level == ^value)
+
+      {"campus", value}, dynamic ->
+        dynamic([campus: a], ^dynamic and a.name == ^value)
+
+      {"city", value}, dynamic ->
+        dynamic([campus: a], ^dynamic and a.city == ^value)
+
+      {_, _}, dynamic ->
+        # Not a where parameter
+        dynamic
+    end)
   end
 
   @doc """

@@ -11,10 +11,14 @@ defmodule OffersWeb.CourseView do
   end
 
   def render("course.json", %{course: course}) do
-    %{id: course.id,
+    %{
+      id: course.id,
       name: course.name,
       kind: course.kind,
       level: course.level,
-      shift: course.shift}
+      shift: course.shift,
+      university: render_one(course.university, OffersWeb.UniversityView, "university.json"),
+      campus: render_one(course.campus, OffersWeb.CampusView, "campus.json")
+    }
   end
 end

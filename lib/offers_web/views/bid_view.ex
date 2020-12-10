@@ -11,12 +11,17 @@ defmodule OffersWeb.BidView do
   end
 
   def render("bid.json", %{bid: bid}) do
-    %{id: bid.id,
+    %{
+      id: bid.id,
       full_price: bid.full_price,
       price_with_discount: bid.price_with_discount,
       discount_percentage: bid.discount_percentage,
       start_date: bid.start_date,
       enrollment_semester: bid.enrollment_semester,
-      enabled: bid.enabled}
+      enabled: bid.enabled,
+      university: render_one(bid.university, OffersWeb.UniversityView, "university.json"),
+      campus: render_one(bid.campus, OffersWeb.CampusView, "campus.json"),
+      course: render_one(bid.course, OffersWeb.CourseView, "course.json")
+    }
   end
 end

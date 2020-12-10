@@ -6,8 +6,8 @@ defmodule OffersWeb.BidController do
 
   action_fallback OffersWeb.FallbackController
 
-  def index(conn, _params) do
-    bids = Teach.list_bids()
+  def index(conn, params) do
+    bids = Teach.list_bids(params)
     render(conn, "index.json", bids: bids)
   end
 
