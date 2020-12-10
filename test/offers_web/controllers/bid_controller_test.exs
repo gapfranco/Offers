@@ -2,7 +2,7 @@ defmodule OffersWeb.BidControllerTest do
   use OffersWeb.ConnCase
 
   alias Offers.Teach
-  alias Offers.Teach.Bid
+  # alias Offers.Teach.Bid
   alias Offers.Guardian
 
   @university_attrs %{
@@ -31,14 +31,14 @@ defmodule OffersWeb.BidControllerTest do
     price_with_discount: 120.5,
     start_date: "some start_date"
   }
-  @update_attrs %{
-    discount_percentage: 456.7,
-    enabled: false,
-    enrollment_semester: "some updated enrollment_semester",
-    full_price: 456.7,
-    price_with_discount: 456.7,
-    start_date: "some updated start_date"
-  }
+  # @update_attrs %{
+  #   discount_percentage: 456.7,
+  #   enabled: false,
+  #   enrollment_semester: "some updated enrollment_semester",
+  #   full_price: 456.7,
+  #   price_with_discount: 456.7,
+  #   start_date: "some updated start_date"
+  # }
   @invalid_attrs %{
     discount_percentage: nil,
     enabled: nil,
