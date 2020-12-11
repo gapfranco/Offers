@@ -11,8 +11,6 @@ defmodule OffersWeb.CampusView do
   end
 
   def render("campus.json", %{campus: campus}) do
-    %{id: campus.id,
-      name: campus.name,
-      city: campus.city}
+    %{id: campus.id, name: campus.name, city: campus.city, university_id: campus.university_id}
   end
 end

@@ -242,7 +242,7 @@ defmodule Offers.Teach do
         dynamic([p], ^dynamic and p.level == ^value)
 
       {"shift", value}, dynamic ->
-        dynamic([p], ^dynamic and p.level == ^value)
+        dynamic([p], ^dynamic and p.shift == ^value)
 
       {"campus", value}, dynamic ->
         dynamic([campus: a], ^dynamic and a.name == ^value)

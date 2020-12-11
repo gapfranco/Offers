@@ -15,7 +15,7 @@ defmodule Offers.Account.User do
   def changeset(user, attrs) do
     user
     |> cast(attrs, [:email, :password_hash])
-    |> validate_required([:email, :password_hash])
+    |> validate_required([:email])
     |> unique_constraint(:email)
   end
 

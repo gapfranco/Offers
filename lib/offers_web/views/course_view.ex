@@ -7,7 +7,19 @@ defmodule OffersWeb.CourseView do
   end
 
   def render("show.json", %{course: course}) do
-    %{data: render_one(course, CourseView, "course.json")}
+    %{data: render_one(course, CourseView, "course1.json")}
+  end
+
+  def render("course1.json", %{course: course}) do
+    %{
+      id: course.id,
+      name: course.name,
+      kind: course.kind,
+      level: course.level,
+      shift: course.shift,
+      university_id: course.university_id,
+      campus_id: course.campus_id
+    }
   end
 
   def render("course.json", %{course: course}) do
