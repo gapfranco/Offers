@@ -2,15 +2,18 @@
 
 ## Sumário
 
-API para criação, manutenção e consulta de ofertas de cursos em Universidades.
-Para montar o banco de dados de cunsulta foram criados os seguintes endpoints:
+Projeto de API REST em Elixir/Phonix modelando a criação, manutenção e consultas em um
+banco de dados de ofertas de cursos em Universidades.
+
+Disponibiliza os seguintes recursos:
 
 - Criação e manutenção de Universidades
-- Criação e manutenção de campus de cada unversidade
-- Criação e manutenção de cursos
+- Criação e manutenção dos campus de cada unversidade
+- Criação e manutenção de cursos ligados aos campus
 - Criação e manutenção de ofertas de cursos
+- Consultas de cursos e ofertas pela composição de diferentes parâmetros: universidade, curso, cidade, período etc.
 
-## Recursos
+## Recursos adicionais
 
 - Autenticação da API com JWT
 - Endpoint para registro de usuários (sign-on)
@@ -22,8 +25,7 @@ Para montar o banco de dados de cunsulta foram criados os seguintes endpoints:
 Para testar localmente:
 
 - Instalar as dependências com `mix deps.get`
-- Criar e e migrar o banco de dados com `mix ecto.setup`
-- Fazer a carga de dados para teste com `mix run priv/repo/seeds.exs`. Vai carregar os dados contidos no db.json que foi enviado.
+- Criar e e migrar o banco de dados com `mix ecto.setup`. Vai carregar os dados contidos no db.json que foi enviado.
 - Iniciar o endpoint Phoenix com `mix phx.server`
 
 Acessar os endpoints com um cliente API como o CURL ou Insomnia no endereço `localhost:4000`.

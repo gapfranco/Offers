@@ -14,7 +14,18 @@ alias DatabaseSeeder
 alias Offers.Repo
 alias Offers.Teach
 
-json = with {:ok, saida} <- DatabaseSeeder.load_data("priv/repo/db.json"), do: saida
+# Verifica se já tem conteudo
+ctg =
+  Teach.list_bids()
+  |> Enum.count()
+
+# Processa apenas se não tiver conteudo
+json =
+  if ctg == 0 do
+    with {:ok, saida} <- DatabaseSeeder.load_data("priv/repo/db.json"), do: saida
+  else
+    []
+  end
 
 for reg <- json do
   university =

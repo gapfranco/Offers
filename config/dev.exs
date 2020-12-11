@@ -6,7 +6,6 @@ config :offers, Offers.Repo,
   password: "docker",
   database: "offers_dev",
   hostname: "localhost",
-  port: 5433,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 

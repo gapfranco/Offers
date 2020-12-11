@@ -36,7 +36,7 @@ defmodule OffersWeb.BidView do
       enabled: bid.enabled,
       university: render_one(bid.university, OffersWeb.UniversityView, "university.json"),
       campus: render_one(bid.campus, OffersWeb.CampusView, "campus.json"),
-      course: render_one(bid.course, OffersWeb.CourseView, "course.json")
+      course: render_one(bid.course, OffersWeb.CourseView, "course1.json")
     }
   end
 end
