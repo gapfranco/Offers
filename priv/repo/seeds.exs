@@ -66,6 +66,4 @@ for reg <- json do
     university_id: university.id,
     campus_id: campus.id
   })
-
-  IO.inspect(reg["course"]["name"])
 end

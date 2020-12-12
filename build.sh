@@ -17,4 +17,3 @@ MIX_ENV=prod mix release --overwrite
 
 # for auto DB migration upon deploy
 MIX_ENV=prod mix ecto.setup
-
