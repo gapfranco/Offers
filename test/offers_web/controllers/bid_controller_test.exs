@@ -2,7 +2,8 @@ defmodule OffersWeb.BidControllerTest do
   use OffersWeb.ConnCase
 
   alias Offers.Teach
-  # alias Offers.Teach.Bid
+  alias Offers.Teach.Bid
+  alias Offers.Teach.Course
   alias Offers.Guardian
 
   @university_attrs %{
@@ -31,14 +32,14 @@ defmodule OffersWeb.BidControllerTest do
     price_with_discount: 120.5,
     start_date: "some start_date"
   }
-  # @update_attrs %{
-  #   discount_percentage: 456.7,
-  #   enabled: false,
-  #   enrollment_semester: "some updated enrollment_semester",
-  #   full_price: 456.7,
-  #   price_with_discount: 456.7,
-  #   start_date: "some updated start_date"
-  # }
+  @update_attrs %{
+    discount_percentage: 456.7,
+    enabled: false,
+    enrollment_semester: "some updated enrollment_semester",
+    full_price: 456.7,
+    price_with_discount: 456.7,
+    start_date: "some updated start_date"
+  }
   @invalid_attrs %{
     discount_percentage: nil,
     enabled: nil,
@@ -104,22 +105,25 @@ defmodule OffersWeb.BidControllerTest do
   end
 
   describe "create bid" do
-    # test "renders bid when data is valid", %{conn: conn} do
-    #   conn = post(conn, Routes.bid_path(conn, :create), bid: @create_attrs)
-    #   assert %{"id" => id} = json_response(conn, 201)["data"]
+    setup [:create_course]
 
-    # conn = get(conn, Routes.bid_path(conn, :show, id))
+    test "renders bid when data is valid", %{conn: conn, course: %Course{} = course} do
+      create_attrs = %{course_id: course.id} |> Enum.into(@create_attrs)
+      conn = post(conn, Routes.bid_path(conn, :create), bid: create_attrs)
+      assert %{"id" => id} = json_response(conn, 201)["data"]
 
-    # assert %{
-    #          "id" => id,
-    #          "discount_percentage" => 120.5,
-    #          "enabled" => true,
-    #          "enrollment_semester" => "some enrollment_semester",
-    #          "full_price" => 120.5,
-    #          "price_with_discount" => 120.5,
-    #          "start_date" => "some start_date"
-    #        } = json_response(conn, 200)["data"]
-    # end
+      conn = get(conn, Routes.bid_path(conn, :show, id))
+
+      assert %{
+               "id" => _id,
+               "discount_percentage" => 120.5,
+               "enabled" => true,
+               "enrollment_semester" => "some enrollment_semester",
+               "full_price" => 120.5,
+               "price_with_discount" => 120.5,
+               "start_date" => "some start_date"
+             } = json_response(conn, 200)["data"]
+    end
 
     test "renders errors when data is invalid", %{conn: conn} do
       conn = post(conn, Routes.bid_path(conn, :create), bid: @invalid_attrs)
@@ -130,22 +134,22 @@ defmodule OffersWeb.BidControllerTest do
   describe "update bid" do
     setup [:create_bid]
 
-    # test "renders bid when data is valid", %{conn: conn, bid: %Bid{id: id} = bid} do
-    #   conn = put(conn, Routes.bid_path(conn, :update, bid), bid: @update_attrs)
-    #   assert %{"id" => ^id} = json_response(conn, 200)["data"]
+    test "renders bid when data is valid", %{conn: conn, bid: %Bid{id: id} = bid} do
+      conn = put(conn, Routes.bid_path(conn, :update, bid), bid: @update_attrs)
+      assert %{"id" => ^id} = json_response(conn, 200)["data"]
 
-    # conn = get(conn, Routes.bid_path(conn, :show, id))
+      conn = get(conn, Routes.bid_path(conn, :show, id))
 
-    # assert %{
-    #          "id" => id,
-    #          "discount_percentage" => 456.7,
-    #          "enabled" => false,
-    #          "enrollment_semester" => "some updated enrollment_semester",
-    #          "full_price" => 456.7,
-    #          "price_with_discount" => 456.7,
-    #          "start_date" => "some updated start_date"
-    #        } = json_response(conn, 200)["data"]
-    # end
+      assert %{
+               "id" => _id,
+               "discount_percentage" => 456.7,
+               "enabled" => false,
+               "enrollment_semester" => "some updated enrollment_semester",
+               "full_price" => 456.7,
+               "price_with_discount" => 456.7,
+               "start_date" => "some updated start_date"
+             } = json_response(conn, 200)["data"]
+    end
 
     test "renders errors when data is invalid", %{conn: conn, bid: bid} do
       conn = put(conn, Routes.bid_path(conn, :update, bid), bid: @invalid_attrs)
@@ -172,5 +176,12 @@ defmodule OffersWeb.BidControllerTest do
     course = fixture(:course, campus.id)
     bid = fixture(:bid, course.id)
     %{bid: bid}
+  end
+
+  defp create_course(_) do
+    university = fixture(:university)
+    campus = fixture(:campus, university.id)
+    course = fixture(:course, campus.id)
+    %{course: course}
   end
 end

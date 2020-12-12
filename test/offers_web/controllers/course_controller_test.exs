@@ -2,6 +2,7 @@ defmodule OffersWeb.CourseControllerTest do
   use OffersWeb.ConnCase
 
   alias Offers.Teach
+  alias Offers.Teach.Course
   alias Offers.Guardian
 
   @university_attrs %{
@@ -21,12 +22,12 @@ defmodule OffersWeb.CourseControllerTest do
     name: "some name",
     shift: "Noite"
   }
-  # @update_attrs %{
-  #   kind: "EaD",
-  #   level: "Tecnólogo",
-  #   name: "some updated name",
-  #   shift: "Manhã"
-  # }
+  @update_attrs %{
+    kind: "EaD",
+    level: "Tecnólogo",
+    name: "some updated name",
+    shift: "Manhã"
+  }
   @invalid_attrs %{kind: nil, level: nil, name: nil, shift: nil}
 
   @user %{id: 1, email: "usr@cl1.com"}
@@ -78,24 +79,24 @@ defmodule OffersWeb.CourseControllerTest do
   describe "create course" do
     setup [:create_campus]
 
-    # test "renders course when data is valid", %{conn: conn, campus: campus} do
-    #   create_attrs =
-    #     %{campus_id: campus.id}
-    #     |> Enum.into(@create_attrs)
+    test "renders course when data is valid", %{conn: conn, campus: campus} do
+      create_attrs =
+        %{campus_id: campus.id}
+        |> Enum.into(@create_attrs)
 
-    #   conn = post(conn, Routes.course_path(conn, :create), course: create_attrs)
-    #   assert %{"id" => id} = json_response(conn, 201)["data"]
+      conn = post(conn, Routes.course_path(conn, :create), course: create_attrs)
+      assert %{"id" => id} = json_response(conn, 201)["data"]
 
-    # conn = get(conn, Routes.course_path(conn, :show, id))
+      conn = get(conn, Routes.course_path(conn, :show, id))
 
-    # assert %{
-    #          "id" => id,
-    #          "kind" => "Presencial",
-    #          "level" => "Bacharelado",
-    #          "name" => "some name",
-    #          "shift" => "Noite"
-    #        } = json_response(conn, 200)["data"]
-    # end
+      assert %{
+               "id" => _id,
+               "kind" => "Presencial",
+               "level" => "Bacharelado",
+               "name" => "some name",
+               "shift" => "Noite"
+             } = json_response(conn, 200)["data"]
+    end
 
     test "renders errors when data is invalid", %{conn: conn} do
       conn = post(conn, Routes.course_path(conn, :create), course: @invalid_attrs)
@@ -106,20 +107,23 @@ defmodule OffersWeb.CourseControllerTest do
   describe "update course" do
     setup [:create_course]
 
-    # test "renders course when data is valid", %{conn: conn, course: %Course{id: id} = course} do
-    #   conn = put(conn, Routes.course_path(conn, :update, course), course: @update_attrs)
-    #   assert %{"id" => ^id} = json_response(conn, 200)["data"]
+    test "renders course when data is valid", %{
+      conn: conn,
+      course: %Course{id: id} = course
+    } do
+      conn = put(conn, Routes.course_path(conn, :update, course), course: @update_attrs)
+      assert %{"id" => ^id} = json_response(conn, 200)["data"]
 
-    # conn = get(conn, Routes.course_path(conn, :show, id))
+      conn = get(conn, Routes.course_path(conn, :show, id))
 
-    # assert %{
-    #          "id" => id,
-    #          "kind" => "EaD",
-    #          "level" => "Tecnólogo",
-    #          "name" => "some updated name",
-    #          "shift" => "Manhã"
-    #        } = json_response(conn, 200)["data"]
-    # end
+      assert %{
+               "id" => _id,
+               "kind" => "EaD",
+               "level" => "Tecnólogo",
+               "name" => "some updated name",
+               "shift" => "Manhã"
+             } = json_response(conn, 200)["data"]
+    end
 
     test "renders errors when data is invalid", %{conn: conn, course: course} do
       conn = put(conn, Routes.course_path(conn, :update, course), course: @invalid_attrs)
